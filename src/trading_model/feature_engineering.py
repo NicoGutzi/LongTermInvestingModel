@@ -11,4 +11,4 @@ def add_basic_features(df: pd.DataFrame) -> pd.DataFrame:
     df['daily_return'] = df['close'].pct_change()
     df['20d_ma'] = df['close'].rolling(window=20).mean()
     df['20d_vol'] = df['daily_return'].rolling(window=20).std()
-    return df.dropna()
+    return df

@@ -1,5 +1,4 @@
-import os
-import yaml
+from typing import List
 import pandas as pd
 from sqlalchemy import text
 from src.utils.database import engine  # engine from your database.py
@@ -72,6 +71,20 @@ def align_macro_data(macro_df: pd.DataFrame, price_index: pd.DatetimeIndex) -> p
     aligned = macro_daily.reindex(price_index, method='ffill')
     return aligned
 
+def add_missingness_flags(df: pd.DataFrame, indicator_columns: List[str]) -> pd.DataFrame:
+    """
+    For each indicator column, adds a binary flag column indicating whether the value is missing.
+    Then fills missing values with a placeholder (e.g., 0 or the mean of the column).
+    """
+    for col in indicator_columns:
+        if df[col].isna().any():
+            # Create a flag column where 1 means missing and 0 means present.
+            flag_col = col + "_flag"
+            df[flag_col] = df[col].isna().astype(int)
+            # Option 1: Fill missing values with 0.
+            df[col] = df[col].fillna(0)
+    return df
+
     
 def preprocess_index_data(index_name: str, config: dict, macro_data: dict) -> pd.DataFrame:
     """
@@ -83,6 +96,8 @@ def preprocess_index_data(index_name: str, config: dict, macro_data: dict) -> pd
     indice_id = get_index_id(index_name)
     price_df = extract_price_data(indice_id)
     macro_features = {}
+    indicator_cols = []
+
     for category in macro_data.keys():
         for country, macro_df in macro_data[category].items():
             if macro_df.empty:
@@ -90,12 +105,16 @@ def preprocess_index_data(index_name: str, config: dict, macro_data: dict) -> pd
             aligned_df = align_macro_data(macro_df, price_df.index)
             col_name = f"{category}_{country}"
             macro_features[col_name] = aligned_df["value"]
+            indicator_cols.append(col_name)
     
     if macro_features:
         macro_df_combined = pd.concat(macro_features, axis=1)
         merged_df = price_df.join(macro_df_combined, how='left')
     else:
         merged_df = price_df.copy()
+
+    # Add missingness flags for the macro indicators.
+    merged_df = add_missingness_flags(merged_df, indicator_cols)
     
     # Compute basic features such as daily returns, moving averages, and volatility.
     processed_df = add_basic_features(merged_df)
