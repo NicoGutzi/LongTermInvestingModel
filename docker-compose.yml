@@ -1,0 +1,104 @@
+x-build: &python_build
+  context: .
+  dockerfile: docker/Dockerfile
+
+services:
+  db:
+    image: timescale/timescaledb:latest-pg15
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - investing_network
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - investing_network
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  alembic:
+    build: *python_build
+    image: myapp:latest
+    working_dir: /app
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - PYTHONPATH=/app
+    command: sh -c "python -m alembic upgrade head"
+    depends_on:
+      - db
+    networks:
+      - investing_network
+
+  data_ingest:
+    build: *python_build
+    image: myapp:latest
+    working_dir: /app
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      - PYTHONPATH=/app
+    # ports:
+    #   - "5678:5678"
+    # command: sh -c "python -m debugpy --listen 0.0.0.0:5678 --wait-for-client scripts/data_ingest.py"
+    command: python scripts/data_ingest.py
+    depends_on:
+      - db
+      - alembic
+    networks:
+      - investing_network
+
+  tests:
+    build: *python_build
+    image: myapp:latest
+    working_dir: /app
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      - PYTHONPATH=/app
+    command: pytest --maxfail=3 --disable-warnings -q
+    depends_on:
+      - db
+      - alembic
+    networks:
+      - investing_network
+
+  training:
+    build: *python_build
+    image: myapp:latest
+    working_dir: /app
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      - PYTHONPATH=/app
+    # command: python scripts/model_training.py
+    ports:
+      - "5678:5678"
+    command: sh -c "python -m debugpy --listen 0.0.0.0:5678 --wait-for-client scripts/model_training.py"
+    depends_on:
+      - db
+      - alembic
+    networks:
+      - investing_network
+
+networks:
+  investing_network:
+    driver: bridge
+
+volumes:
+  db_data:
+    driver: local
+  pgadmin_data:
+    driver: local

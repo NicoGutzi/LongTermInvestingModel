@@ -1,0 +1,61 @@
+data_requests:  
+  indices:
+    MSCI_World:
+      yahoo: "^990100-USD-STRD"
+      inception_date: "1969-12-31"
+      index_weights:
+        inflation: 1.0
+        interest_rate: 1.0
+        unemployment_rate: 1.0
+    
+    Emerging_Markets:
+      yahoo: "EEM"
+      inception_date: "1987-12-31"
+      index_weights:
+        inflation: 1.0
+        interest_rate: 1.0
+        unemployment_rate: 1.0
+    
+    MSCI_Europe_EUR:
+      yahoo: "^990500-EUR-STRD"
+      inception_date: "1999-01-01"
+      index_weights:
+        inflation: 1.0
+        interest_rate: 1.0
+        unemployment_rate: 1.0
+  
+  inflation_rate:
+    USA:
+      series_id: "FPCPITOTLZGUSA"
+    EU:
+      series_id: "FPCPITOTLZGEUU"
+    JAPAN:
+      series_id: "FPCPITOTLZGJPN"
+    CN:
+      series_id: "FPCPITOTLZGCHN"
+    Brazil:
+      series_id: "CPALTT01BRM659N"
+    INDIA:
+      series_id: "FPCPITOTLZGIND"
+
+  interest_rate:
+    USA:
+      series_id: "FEDFUNDS"
+    EU:
+      series_id: "IRLTLT01EZM156N"
+    JAPAN:
+      series_id: "IRLTLT01JPM156N"
+    CN: 
+      series_id: "IR3TTS01CNM156N"
+    BRAZIL:
+      series_id: "INTGSTBRM193N"
+    INDIA:
+      series_id: "INDIRLTLT01STM"
+
+  unemployment_rate:
+    USA:
+      series_id: "UNRATE"
+    EU:
+      series_id: "LRHUTTTTEUM156S"
+    JAPAN:
+      series_id: "LRHUTTTTJPM156S"

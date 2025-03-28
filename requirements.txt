@@ -1,0 +1,13 @@
+alembic
+python-dotenv
+pytest
+SQLAlchemy
+psycopg2-binary
+pandas
+yfinance==0.2.54
+pyyaml
+debugpy
+stable_baselines3
+gym
+matplotlib
+shimmy>=2.0
