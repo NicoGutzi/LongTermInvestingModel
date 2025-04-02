@@ -12,8 +12,10 @@ This repository is dedicated to training a long-term investing model that levera
 - [Future Improvements](#future-improvements)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+- [Debugging](#debugging)
+- [Planned Enhancements](#planned-enhancements)
+- [Future Improvements](#future-improvements)
+
 
 ## Overview
 
@@ -84,7 +86,7 @@ This project uses **Docker Compose** to build and run all required services. Fol
 2. **Setup the .env file**
 3. **Build the docker file**:
     ```bash
-   docker-compose up --build
+   docker compose up --build
 
 
 
