@@ -1,1 +1,1 @@
-from .trading_env import MultiAssetTradingEnv
+from .trading_environments import MultiAssetTradingEnv, SingleAssetTradingEnv

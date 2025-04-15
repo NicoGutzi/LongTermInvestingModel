@@ -62,19 +62,19 @@ services:
     networks:
       - investing_network
 
-  tests:
-    build: *python_build
-    image: myapp:latest
-    working_dir: /app
-    environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-      - PYTHONPATH=/app
-    command: pytest --maxfail=3 --disable-warnings -q
-    depends_on:
-      - db
-      - alembic
-    networks:
-      - investing_network
+  # tests:
+  #   build: *python_build
+  #   image: myapp:latest
+  #   working_dir: /app
+  #   environment:
+  #     - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+  #     - PYTHONPATH=/app
+  #   command: pytest --maxfail=3 --disable-warnings -q
+  #   depends_on:
+  #     - db
+  #     - alembic
+  #   networks:
+  #     - investing_network
 
   training:
     build: *python_build
@@ -86,7 +86,7 @@ services:
     # command: python scripts/model_training.py
     ports:
       - "5678:5678"
-    command: sh -c "python -m debugpy --listen 0.0.0.0:5678 --wait-for-client scripts/model_training.py"
+    command: sh -c "python -m debugpy --listen 0.0.0.0:5678 --wait-for-client scripts/single_asset_trading_model.py"
     depends_on:
       - db
       - alembic

@@ -9,7 +9,7 @@ from stable_baselines3.common.vec_env import DummyVecEnv
 from src.trading_model import preprocessing
 from src.trading_model import MultiAssetTradingEnv
 from src.utils.logger import logger
-from src.evaluation.buy_and_hold_evaluation import evaluate_buy_and_hold
+from src.evaluation.buy_and_hold_evaluation import evaluate_buy_and_hold_multiple_assets
 
 
 # Function to evaluate the model on an environment (simulate one full episode)
@@ -183,7 +183,7 @@ def train_until_beat_buy_and_hold(
         
         # Evaluate the model and the buy & hold strategy on this window
         model_profit = evaluate_model(new_train_env, model)
-        bnh_profit = evaluate_buy_and_hold(train_data, initial_cash=initial_cash, **cost_params)
+        bnh_profit = evaluate_buy_and_hold_multiple_assets(train_data, initial_cash=initial_cash, **cost_params)
         
         iteration_results.append(log_iteration_result(iteration, random_start, random_end, model_profit, bnh_profit))
         
