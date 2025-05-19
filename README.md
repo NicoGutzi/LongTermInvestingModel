@@ -1,5 +1,9 @@
 # LongTermInvestingModel
 
+### General goal and motivation
+The general goal is to start playing around with learning methods and algorithms while aiming at a "simple" target: Beating a buy and hold strategy in a 10 year timeframe using learning methods. I want to understerstand how to train and use a model to achieve a clear goal. While doing this, I will try out different methods until I am happy with the result. 
+
+### Repo description
 This repository is dedicated to training a long-term investing model that leverages historical price data and economic indicators. The primary focus is on modeling indices rather than individual stocks. By integrating data from multiple sources and applying both unsupervised and reinforcement learning techniques, the model aims to identify market trends and make informed trading decisions that can outperform traditional buy-and-hold strategies.
 
 ## Table of Contents

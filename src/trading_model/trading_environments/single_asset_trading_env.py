@@ -111,13 +111,14 @@ class SingleAssetTradingEnv(gym.Env):
         Returns:
             Composite reward value.
         """
+        # 1) Compute log-return over the window
         # Use a window of past values if available, else fallback to daily change.
         if len(self.asset_memory) > window_size:
             previous_value = self.asset_memory[-window_size - 1]
         else:
             previous_value = self.asset_memory[-1]
-        
         current_value = self.total_asset
+
         log_return = 0.0
         if previous_value > 0 and current_value > 0:
             log_return = np.log(current_value) - np.log(previous_value)

@@ -81,8 +81,19 @@ def add_missingness_flags(df: pd.DataFrame, indicator_columns: List[str]) -> pd.
             # Create a flag column where 1 means missing and 0 means present.
             flag_col = col + "_flag"
             df[flag_col] = df[col].isna().astype(int)
-            # Option 1: Fill missing values with 0.
+            # Fill missing values with 0.
             df[col] = df[col].fillna(0)
+    return df
+
+def normalize_macro_data(df: pd.DataFrame, indicator_columns: List[str]) -> pd.DataFrame:
+    """
+    Normalize macroeconomic data (such as interest rates, inflation rates).
+    This function applies standardization (Z-score normalization) to the indicator columns.
+    """
+    for col in indicator_columns:
+        mean = df[col].mean()
+        std = df[col].std()
+        df[col] = (df[col] - mean) / std  # Z-score normalization (Standardization)
     return df
 
     
@@ -96,7 +107,7 @@ def preprocess_index_data(index_name: str, config: dict, macro_data: dict) -> pd
     indice_id = get_index_id(index_name)
     price_df = extract_price_data(indice_id)
     macro_features = {}
-    indicator_cols = []
+    indicator_cols = [] # used for identifying the data columns from the flags
 
     for category in macro_data.keys():
         for country, macro_df in macro_data[category].items():
@@ -115,6 +126,8 @@ def preprocess_index_data(index_name: str, config: dict, macro_data: dict) -> pd
 
     # Add missingness flags for the macro indicators.
     merged_df = add_missingness_flags(merged_df, indicator_cols)
+
+    merged_df = normalize_macro_data(merged_df, indicator_cols)
     
     # Compute basic features such as daily returns, moving averages, and volatility.
     processed_df = add_basic_features(merged_df)
